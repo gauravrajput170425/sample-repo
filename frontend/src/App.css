@@ -1,0 +1,49 @@
+/* All styles have been migrated to Tailwind */
+
+/* Header styles */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: white;
+  border-bottom: 1px solid #eee;
+}
+
+@media (min-width: 768px) {
+  header {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+header h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.header-logo {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  background-color: #e03131;
+  color: white;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
