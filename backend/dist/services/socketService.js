@@ -54,14 +54,12 @@ const authenticatedSockets = new Map();
 // Initialize socket handler
 const initializeSocketHandlers = (io) => {
     io.on('connection', (socket) => {
-        console.log(`User connected: ${socket.id}`);
         // Set up authentication
         socket.on(SocketEvents.AUTHENTICATE, ({ token }) => {
             const user = (0, userService_1.verifyToken)(token);
             if (user) {
                 // Store the user info with this socket
                 authenticatedSockets.set(socket.id, user);
-                console.log(`Socket ${socket.id} authenticated as ${user.username}`);
             }
             else {
                 console.log(`Socket ${socket.id} authentication failed`);
@@ -73,21 +71,15 @@ const initializeSocketHandlers = (io) => {
             // Only allow joining if authenticated and has access to the list
             if (user && dataStore.hasAccessToList(user.userId, listId)) {
                 socket.join(`list:${listId}`);
-                console.log(`Socket ${socket.id} joined room for list: ${listId}`);
-            }
-            else {
-                console.log(`Socket ${socket.id} denied access to list room: ${listId}`);
             }
         });
         // Handle leaving a list room
         socket.on(SocketEvents.LEAVE_LIST_ROOM, ({ listId }) => {
             socket.leave(`list:${listId}`);
-            console.log(`Socket ${socket.id} left room for list: ${listId}`);
         });
         socket.on('disconnect', () => {
             // Clean up authentication info on disconnect
             authenticatedSockets.delete(socket.id);
-            console.log(`User disconnected: ${socket.id}`);
         });
     });
 };

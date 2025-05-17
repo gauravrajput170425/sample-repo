@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from 'react';
 import type { Todo } from '../types/todo';
-import { TodoStatus } from '../types/todo';
+import { TodoStatus, TodoPriority } from '../types/todo';
 
 interface TodoItemProps {
   todo: Todo;
@@ -81,6 +81,52 @@ const TodoItem = ({
     }
   };
 
+  // Helper function to get priority text and color
+  const getPriorityInfo = (priority: TodoPriority) => {
+    switch(priority) {
+      case TodoPriority.LOW:
+        return { 
+          text: 'Low',
+          icon: (
+            <svg className="w-4 h-4 text-green-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 9l-7 7-7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          ),
+          textColor: 'text-green-600'
+        };
+      case TodoPriority.MEDIUM:
+        return { 
+          text: 'Medium',
+          icon: (
+            <svg className="w-4 h-4 text-yellow-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 10H6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          ),
+          textColor: 'text-yellow-600'
+        };
+      case TodoPriority.HIGH:
+        return { 
+          text: 'High',
+          icon: (
+            <svg className="w-4 h-4 text-red-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 15l7-7 7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          ),
+          textColor: 'text-red-600'
+        };
+      default:
+        return { 
+          text: 'Medium',
+          icon: (
+            <svg className="w-4 h-4 text-yellow-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 10H6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          ),
+          textColor: 'text-yellow-600'
+        };
+    }
+  };
+
   // Get formatted date - compact for mobile, fuller for desktop
   const getFormattedDate = () => {
     const date = new Date();
@@ -108,6 +154,7 @@ const TodoItem = ({
 
   const isCompleted = todo.status === TodoStatus.COMPLETED;
   const statusInfo = getStatusInfo(todo.status);
+  const priorityInfo = getPriorityInfo(todo.priority);
   const { mobileFormat, desktopFormat } = getFormattedDate();
 
   return (
@@ -168,18 +215,9 @@ const TodoItem = ({
         <div className="md:hidden text-xs text-gray-500 mb-1">Priority:</div>
         <div className="flex items-center">
           <span className="mr-2">
-            {/* Priority icon based on assigned priority (for demonstration) */}
-            {Math.random() > 0.5 ? (
-              <svg className="w-4 h-4 text-red-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5 15l7-7 7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            ) : (
-              <svg className="w-4 h-4 text-yellow-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18 10H6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            )}
+            {priorityInfo.icon}
           </span>
-          {Math.random() > 0.5 ? 'High' : 'Medium'}
+          <span className={priorityInfo.textColor}>{priorityInfo.text}</span>
         </div>
       </div>
       <div className="md:whitespace-nowrap px-4 py-2 md:border-r border-[#0000000D] md:flex md:items-center space-x-2">

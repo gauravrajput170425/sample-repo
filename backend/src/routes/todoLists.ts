@@ -4,7 +4,7 @@ import * as dataStore from '../services/dataStore';
 import * as socketService from '../services/socketService';
 import type { TodoList } from '../types/todoList';
 import type { Todo } from '../types/todo';
-import { TodoStatus } from '../types/todo';
+import { TodoStatus, TodoPriority } from '../types/todo';
 import { Server } from 'socket.io';
 import { AuthRequest, authenticateToken } from '../middleware/auth';
 import { SharePermission } from '../db/database';
@@ -239,7 +239,7 @@ router.delete('/:listId', (req: AuthRequest, res: Response) => {
  */
 router.post('/:listId/todos', (req: AuthRequest, res: Response) => {
   const { listId } = req.params;
-  const { text } = req.body;
+  const { text, priority, status } = req.body;
   const userId = req.user?.userId;
   
   if (!userId) {
@@ -258,7 +258,8 @@ router.post('/:listId/todos', (req: AuthRequest, res: Response) => {
   const newTodo: Todo = {
     id: uuidv4(),
     text,
-    status: 0 // TodoStatus.TODO
+    status: status !== undefined ? status : TodoStatus.TODO,
+    priority: priority !== undefined ? priority : TodoPriority.MEDIUM
   };
   
   const success = dataStore.addTodo(listId, newTodo);
@@ -317,7 +318,7 @@ router.patch('/:listId/todos/:todoId/toggle', (req: AuthRequest, res: Response) 
  */
 router.put('/:listId/todos/:todoId', (req: AuthRequest, res: Response) => {
   const { listId, todoId } = req.params;
-  const updates = req.body; // Can include title/text and other properties
+  const updates = req.body; // Can include title/text, priority and other properties
   const userId = req.user?.userId;
   
   if (!userId) {
@@ -340,9 +341,13 @@ router.put('/:listId/todos/:todoId', (req: AuthRequest, res: Response) => {
     processedUpdates.status = updates.completed ? TodoStatus.COMPLETED : TodoStatus.TODO;
   }
   
+  if (updates.priority !== undefined) {
+    processedUpdates.priority = updates.priority;
+  }
+  
   // Apply other updates directly
   Object.entries(updates).forEach(([key, value]) => {
-    if (key !== 'title' && key !== 'completed') {
+    if (key !== 'title' && key !== 'completed' && key !== 'priority') {
       (processedUpdates as any)[key] = value;
     }
   });

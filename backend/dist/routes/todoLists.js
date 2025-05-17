@@ -217,7 +217,7 @@ router.delete('/:listId', (req, res) => {
  */
 router.post('/:listId/todos', (req, res) => {
     const { listId } = req.params;
-    const { text } = req.body;
+    const { text, priority, status } = req.body;
     const userId = req.user?.userId;
     if (!userId) {
         return res.status(401).json({ error: 'Authentication required' });
@@ -232,7 +232,8 @@ router.post('/:listId/todos', (req, res) => {
     const newTodo = {
         id: (0, uuid_1.v4)(),
         text,
-        status: 0 // TodoStatus.TODO
+        status: status !== undefined ? status : todo_1.TodoStatus.TODO,
+        priority: priority !== undefined ? priority : todo_1.TodoPriority.MEDIUM
     };
     const success = dataStore.addTodo(listId, newTodo);
     if (!success) {
@@ -278,7 +279,7 @@ router.patch('/:listId/todos/:todoId/toggle', (req, res) => {
  */
 router.put('/:listId/todos/:todoId', (req, res) => {
     const { listId, todoId } = req.params;
-    const updates = req.body; // Can include title/text and other properties
+    const updates = req.body; // Can include title/text, priority and other properties
     const userId = req.user?.userId;
     if (!userId) {
         return res.status(401).json({ error: 'Authentication required' });
@@ -295,9 +296,12 @@ router.put('/:listId/todos/:todoId', (req, res) => {
     if (updates.completed !== undefined) {
         processedUpdates.status = updates.completed ? todo_1.TodoStatus.COMPLETED : todo_1.TodoStatus.TODO;
     }
+    if (updates.priority !== undefined) {
+        processedUpdates.priority = updates.priority;
+    }
     // Apply other updates directly
     Object.entries(updates).forEach(([key, value]) => {
-        if (key !== 'title' && key !== 'completed') {
+        if (key !== 'title' && key !== 'completed' && key !== 'priority') {
             processedUpdates[key] = value;
         }
     });

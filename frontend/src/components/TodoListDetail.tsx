@@ -6,7 +6,7 @@ import DeleteTaskModal from './DeleteTaskModal';
 import ShareListModal from './ShareListModal';
 import TodoItem from './TodoItem';
 import type { TodoList } from '../types/todoList';
-import { TodoStatus } from '../types/todo';
+import { TodoStatus, TodoPriority } from '../types/todo';
 import type { Todo } from '../types/todo';
 import * as todoListService from '../services/todoListService';
 import { useAuth } from '../contexts/AuthContext';
@@ -103,11 +103,11 @@ const TodoListDetail = () => {
     }
   }, [isEditingListName]);
 
-  const handleAddTask = async (taskName: string, status: TodoStatus, priority: string) => {
+  const handleAddTask = async (taskName: string, status: TodoStatus, priority: TodoPriority) => {
     if (listId && taskName.trim()) {
       try {
         // Use the service directly to add the todo and get fresh data
-        await todoListService.createTodo(listId, taskName);
+        await todoListService.createTodo(listId, taskName, priority, status);
         
         // Refresh the list to get the updated todos
         const updatedList = await todoListService.fetchTodoList(listId);
@@ -121,11 +121,14 @@ const TodoListDetail = () => {
     }
   };
 
-  const handleUpdateTask = async (taskName: string, status: TodoStatus, priority: string) => {
+  const handleUpdateTask = async (taskName: string, status: TodoStatus, priority: TodoPriority) => {
     if (listId && todoToEdit && taskName.trim()) {
       try {
-        // Update the todo text
-        await todoListService.updateTodo(listId, todoToEdit.id, { title: taskName });
+        // Update the todo text and priority
+        await todoListService.updateTodo(listId, todoToEdit.id, { 
+          title: taskName,
+          priority: priority
+        });
         
         // Toggle the status if it changed
         if (todoToEdit.status !== status) {

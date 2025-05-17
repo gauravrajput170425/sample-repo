@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import { TodoStatus } from '../types/todo';
+import { TodoStatus, TodoPriority } from '../types/todo';
 
 interface TaskDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (taskName: string, status: TodoStatus, priority: string) => void;
+  onSave: (taskName: string, status: TodoStatus, priority: TodoPriority) => void;
   initialTaskName?: string;
   initialStatus?: TodoStatus;
-  initialPriority?: string;
+  initialPriority?: TodoPriority;
 }
 
 const TaskDetailsModal = ({ 
@@ -16,11 +16,11 @@ const TaskDetailsModal = ({
   onSave,
   initialTaskName = '',
   initialStatus = TodoStatus.TODO,
-  initialPriority = 'Medium'
+  initialPriority = TodoPriority.MEDIUM
 }: TaskDetailsModalProps) => {
   const [taskName, setTaskName] = useState(initialTaskName);
   const [status, setStatus] = useState<TodoStatus>(initialStatus);
-  const [priority, setPriority] = useState(initialPriority);
+  const [priority, setPriority] = useState<TodoPriority>(initialPriority);
   
   // Update state when props change
   useEffect(() => {
@@ -38,7 +38,7 @@ const TaskDetailsModal = ({
       onSave(taskName, status, priority);
       setTaskName('');
       setStatus(TodoStatus.TODO);
-      setPriority('Medium');
+      setPriority(TodoPriority.MEDIUM);
     }
   };
 
@@ -67,6 +67,34 @@ const TaskDetailsModal = ({
         return TodoStatus.COMPLETED;
       default:
         return TodoStatus.TODO;
+    }
+  };
+  
+  // Convert priority enum to string
+  const getPriorityText = (priorityValue: TodoPriority): string => {
+    switch(priorityValue) {
+      case TodoPriority.LOW:
+        return 'Low';
+      case TodoPriority.MEDIUM:
+        return 'Medium';
+      case TodoPriority.HIGH:
+        return 'High';
+      default:
+        return 'Medium';
+    }
+  };
+  
+  // Convert string to priority enum
+  const getPriorityValue = (priorityText: string): TodoPriority => {
+    switch(priorityText) {
+      case 'Low':
+        return TodoPriority.LOW;
+      case 'Medium':
+        return TodoPriority.MEDIUM;
+      case 'High':
+        return TodoPriority.HIGH;
+      default:
+        return TodoPriority.MEDIUM;
     }
   };
 
@@ -126,8 +154,8 @@ const TaskDetailsModal = ({
             <label className="block text-sm mb-1">Priority</label>
             <div className="relative">
               <select
-                value={priority}
-                onChange={(e) => setPriority(e.target.value)}
+                value={getPriorityText(priority)}
+                onChange={(e) => setPriority(getPriorityValue(e.target.value))}
                 className="w-full p-2 border rounded-md appearance-none pr-8"
               >
                 <option value="Low">Low</option>

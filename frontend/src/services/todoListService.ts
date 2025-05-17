@@ -140,14 +140,14 @@ export const shareTodoList = async (listId: string, email: string, permission: '
   }
 };
 
-export const createTodo = async (listId: string, title: string) => {
+export const createTodo = async (listId: string, title: string, priority = 1, status = 0) => {
   const response = await fetch(`${API_URL}/lists/${listId}/todos`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       ...authService.getAuthHeader()
     },
-    body: JSON.stringify({ text: title })
+    body: JSON.stringify({ text: title, priority, status })
   });
   
   if (!response.ok) {
@@ -157,7 +157,7 @@ export const createTodo = async (listId: string, title: string) => {
   return response.json();
 };
 
-export const updateTodo = async (listId: string, todoId: string, updates: { title?: string; completed?: boolean }) => {
+export const updateTodo = async (listId: string, todoId: string, updates: { title?: string; completed?: boolean; priority?: number }) => {
   const response = await fetch(`${API_URL}/lists/${listId}/todos/${todoId}`, {
     method: 'PUT',
     headers: {

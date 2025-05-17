@@ -19,12 +19,24 @@ const PORT = process.env.PORT || 3001;
 const server = http_1.default.createServer(app);
 const io = new socket_io_1.Server(server, {
     cors: {
-        origin: '*',
-        methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH']
+        origin: [
+            'http://localhost:5173', // Vite dev server
+            'https://your-firebase-app-id.web.app', // Firebase hosting domain
+            'https://your-firebase-app-id.firebaseapp.com', // Alternative Firebase domain
+        ],
+        methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'],
+        credentials: true
     }
 });
 // Middleware
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({
+    origin: [
+        'http://localhost:5173', // Vite dev server
+        'https://your-firebase-app-id.web.app', // Firebase hosting domain
+        'https://your-firebase-app-id.firebaseapp.com', // Alternative Firebase domain
+    ],
+    credentials: true
+}));
 app.use(express_1.default.json());
 // Initialize Socket.IO handlers
 (0, socketService_1.initializeSocketHandlers)(io);

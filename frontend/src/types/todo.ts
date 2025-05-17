@@ -4,8 +4,15 @@ export enum TodoStatus {
   COMPLETED = 2
 }
 
+export enum TodoPriority {
+  LOW = 0,
+  MEDIUM = 1,
+  HIGH = 2
+}
+
 export interface Todo {
   id: string;
   text: string;
   status: TodoStatus;
+  priority: TodoPriority;
 }
